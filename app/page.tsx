@@ -10,6 +10,7 @@ interface Product {
   metaUrl: string;
   aliexpressPrice: number;
   rendyolPrice: number;
+  potentialPrice: number;
   imageFile: File | null;
   imagePreview: string;
   notes: string;
@@ -53,6 +54,7 @@ export default function Home() {
     metaUrl: '',
     aliexpressPrice: '',
     rendyolPrice: '',
+    potentialPrice: '',
     imageFile: null as File | null,
     imagePreview: '',
     notes: '',
@@ -121,6 +123,7 @@ export default function Home() {
           metaUrl: newProduct.metaUrl,
           aliexpressPrice: parseFloat(newProduct.aliexpressPrice),
           rendyolPrice: parseFloat(newProduct.rendyolPrice),
+          potentialPrice: parseFloat(newProduct.potentialPrice),
           imageFile: newProduct.imageFile,
           imagePreview: newProduct.imagePreview || product.imagePreview,
           notes: newProduct.notes,
@@ -139,6 +142,7 @@ export default function Home() {
         metaUrl: newProduct.metaUrl,
         aliexpressPrice: parseFloat(newProduct.aliexpressPrice),
         rendyolPrice: parseFloat(newProduct.rendyolPrice),
+        potentialPrice: parseFloat(newProduct.potentialPrice),
         imageFile: newProduct.imageFile,
         imagePreview: newProduct.imagePreview,
         notes: newProduct.notes,
@@ -155,6 +159,7 @@ export default function Home() {
       metaUrl: '',
       aliexpressPrice: '',
       rendyolPrice: '',
+      potentialPrice: '',
       imageFile: null,
       imagePreview: '',
       notes: '',
@@ -175,6 +180,7 @@ export default function Home() {
       metaUrl: product.metaUrl,
       aliexpressPrice: product.aliexpressPrice.toString(),
       rendyolPrice: product.rendyolPrice.toString(),
+      potentialPrice: product.potentialPrice.toString(),
       imageFile: product.imageFile,
       imagePreview: product.imagePreview,
       notes: product.notes,
@@ -314,6 +320,17 @@ export default function Home() {
               />
             </div>
             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Potansiyel Satış Fiyatı ($)</label>
+              <input
+                type="number"
+                step="0.01"
+                value={newProduct.potentialPrice}
+                onChange={(e) => setNewProduct({...newProduct, potentialPrice: e.target.value})}
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Toplam Maliyet ($)</label>
               <input
                 type="number"
@@ -369,6 +386,7 @@ export default function Home() {
                     metaUrl: '',
                     aliexpressPrice: '',
                     rendyolPrice: '',
+                    potentialPrice: '',
                     imageFile: null,
                     imagePreview: '',
                     notes: '',
@@ -465,6 +483,9 @@ export default function Home() {
                       </p>
                       <p className="text-sm text-gray-600">
                         <span className="font-medium">Trendyol Satış Fiyatı:</span> ${product.rendyolPrice}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-medium">Potansiyel Satış Fiyatı:</span> ${product.potentialPrice}
                       </p>
                       <p className="text-sm text-gray-600">
                         <span className="font-medium">Toplam Maliyet:</span> ${product.totalCost}
