@@ -45,6 +45,12 @@ const compressImage = (imageDataUrl: string, maxWidth: number = 800): Promise<st
   });
 };
 
+// Link kısaltma fonksiyonu
+const truncateUrl = (url: string, maxLength: number = 40) => {
+  if (url.length <= maxLength) return url;
+  return url.substring(0, maxLength) + '...';
+};
+
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [newProduct, setNewProduct] = useState({
@@ -460,20 +466,32 @@ export default function Home() {
                     <div className="space-y-2">
                       <p className="text-sm text-gray-600">
                         <span className="font-medium">Shopify Linki:</span>{' '}
-                        <a href={product.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                          {product.url}
+                        <a href={product.url} 
+                           title={product.url}
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           className="text-blue-600 hover:underline">
+                          {truncateUrl(product.url)}
                         </a>
                       </p>
                       <p className="text-sm text-gray-600">
                         <span className="font-medium">AliExpress Linki:</span>{' '}
-                        <a href={product.aliexpressUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                          {product.aliexpressUrl}
+                        <a href={product.aliexpressUrl} 
+                           title={product.aliexpressUrl}
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           className="text-blue-600 hover:underline">
+                          {truncateUrl(product.aliexpressUrl)}
                         </a>
                       </p>
                       <p className="text-sm text-gray-600">
                         <span className="font-medium">Meta Kütüphane Linki:</span>{' '}
-                        <a href={product.metaUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                          {product.metaUrl}
+                        <a href={product.metaUrl} 
+                           title={product.metaUrl}
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           className="text-blue-600 hover:underline">
+                          {truncateUrl(product.metaUrl)}
                         </a>
                       </p>
                     </div>
