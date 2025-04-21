@@ -244,7 +244,7 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Ürün Adı</label>
+              <label className="block text-sm font-medium text-black mb-1">Ürün Adı</label>
               <input
                 type="text"
                 value={newProduct.name}
@@ -254,7 +254,7 @@ export default function Home() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Ürün Görseli</label>
+              <label className="block text-sm font-medium text-black mb-1">Ürün Görseli</label>
               <div className="flex items-center gap-4">
                 <input
                   type="file"
@@ -274,7 +274,7 @@ export default function Home() {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Shopify Linki</label>
+              <label className="block text-sm font-medium text-black mb-1">Shopify Linki</label>
               <input
                 type="url"
                 value={newProduct.url}
@@ -284,7 +284,7 @@ export default function Home() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">AliExpress Linki</label>
+              <label className="block text-sm font-medium text-black mb-1">AliExpress Linki</label>
               <input
                 type="url"
                 value={newProduct.aliexpressUrl}
@@ -294,7 +294,7 @@ export default function Home() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Meta Kütüphane Linki</label>
+              <label className="block text-sm font-medium text-black mb-1">Meta Kütüphane Linki</label>
               <input
                 type="url"
                 value={newProduct.metaUrl}
@@ -304,7 +304,7 @@ export default function Home() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">AliExpress Fiyatı ($)</label>
+              <label className="block text-sm font-medium text-black mb-1">AliExpress Fiyatı ($)</label>
               <input
                 type="number"
                 step="0.01"
@@ -315,7 +315,7 @@ export default function Home() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Trendyol Satış Fiyatı ($)</label>
+              <label className="block text-sm font-medium text-black mb-1">Trendyol Satış Fiyatı ($)</label>
               <input
                 type="number"
                 step="0.01"
@@ -326,7 +326,7 @@ export default function Home() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Potansiyel Satış Fiyatı ($)</label>
+              <label className="block text-sm font-medium text-black mb-1">Potansiyel Satış Fiyatı ($)</label>
               <input
                 type="number"
                 step="0.01"
@@ -337,7 +337,7 @@ export default function Home() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Toplam Maliyet ($)</label>
+              <label className="block text-sm font-medium text-black mb-1">Toplam Maliyet ($)</label>
               <input
                 type="number"
                 step="0.01"
@@ -348,7 +348,7 @@ export default function Home() {
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Notlar</label>
+              <label className="block text-sm font-medium text-black mb-1">Notlar</label>
               <textarea
                 value={newProduct.notes}
                 onChange={(e) => setNewProduct({...newProduct, notes: e.target.value})}
@@ -357,7 +357,7 @@ export default function Home() {
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Ürün Puanı (1-10)</label>
+              <label className="block text-sm font-medium text-black mb-1">Ürün Puanı (1-10)</label>
               <div className="flex items-center space-x-2">
                 <input
                   type="range"
@@ -464,7 +464,7 @@ export default function Home() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-black">
                         <span className="font-medium">Shopify Linki:</span>{' '}
                         <a href={product.url} 
                            title={product.url}
@@ -474,7 +474,7 @@ export default function Home() {
                           {truncateUrl(product.url)}
                         </a>
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-black">
                         <span className="font-medium">AliExpress Linki:</span>{' '}
                         <a href={product.aliexpressUrl} 
                            title={product.aliexpressUrl}
@@ -484,7 +484,7 @@ export default function Home() {
                           {truncateUrl(product.aliexpressUrl)}
                         </a>
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-black">
                         <span className="font-medium">Meta Kütüphane Linki:</span>{' '}
                         <a href={product.metaUrl} 
                            title={product.metaUrl}
@@ -496,25 +496,25 @@ export default function Home() {
                       </p>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-black">
                         <span className="font-medium">AliExpress Fiyatı:</span> ${product.aliexpressPrice}
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-black">
                         <span className="font-medium">Trendyol Satış Fiyatı:</span> ${product.rendyolPrice}
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-black">
                         <span className="font-medium">Potansiyel Satış Fiyatı:</span> ${product.potentialPrice}
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-black">
                         <span className="font-medium">Toplam Maliyet:</span> ${product.totalCost}
                       </p>
                     </div>
                   </div>
                   <div className="mt-4">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-black">
                       <span className="font-medium">Notlar:</span> {product.notes}
                     </p>
-                    <p className="text-sm text-gray-500 mt-2">
+                    <p className="text-sm text-black mt-2">
                       Eklenme Tarihi: {new Date(product.createdAt).toLocaleDateString('tr-TR')}
                     </p>
                   </div>
