@@ -17,10 +17,11 @@ interface Product {
   notes: string;
   rating: number;
   totalCost: number;
+  netProfit: number;
   createdAt: string;
 }
 
-type SortOption = 'rating-desc' | 'rating-asc' | 'aliexpressPrice-desc' | 'aliexpressPrice-asc' | 'rendyolPrice-desc' | 'rendyolPrice-asc' | 'totalCost-desc' | 'totalCost-asc';
+type SortOption = 'rating-desc' | 'rating-asc' | 'aliexpressPrice-desc' | 'aliexpressPrice-asc' | 'rendyolPrice-desc' | 'rendyolPrice-asc' | 'totalCost-desc' | 'totalCost-asc' | 'netProfit-desc' | 'netProfit-asc';
 
 // Resim sıkıştırma fonksiyonu
 const compressImage = (imageDataUrl: string, maxWidth: number = 800): Promise<string> => {
@@ -54,7 +55,7 @@ const truncateUrl = (url: string, maxLength: number = 40) => {
 
 // Fiyat renklendirme fonksiyonları
 const getAliExpressPriceColor = (price: number) => {
-  return price > 15 ? 'text-red-600' : 'text-green-600';
+  return price > 1000 ? 'text-red-600' : 'text-green-600';
 };
 
 const getTrendyolPriceColor = (price: number) => {
@@ -63,8 +64,17 @@ const getTrendyolPriceColor = (price: number) => {
   return 'text-green-600';
 };
 
+// Net kar renklendirme fonksiyonunu güncelle
+const getNetProfitColor = (profit: number) => {
+  if (profit >= 301) return 'text-green-600';
+  if (profit >= 250) return 'text-yellow-600';
+  if (profit >= 151) return 'text-gray-600';
+  return 'text-red-600';
+};
+
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [formattedDates, setFormattedDates] = useState<{[key: string]: string}>({});
   const [newProduct, setNewProduct] = useState({
     name: '',
     url: '',
@@ -108,6 +118,15 @@ export default function Home() {
     }
   }, [products]);
 
+  // Tarihleri formatla
+  useEffect(() => {
+    const dates: {[key: string]: string} = {};
+    products.forEach(product => {
+      dates[product.id] = new Date(product.createdAt).toLocaleDateString('tr-TR');
+    });
+    setFormattedDates(dates);
+  }, [products]);
+
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -141,14 +160,15 @@ export default function Home() {
           aliexpressUrl: newProduct.aliexpressUrl,
           metaUrl: newProduct.metaUrl,
           aliexpressPrice: parseFloat(newProduct.aliexpressPrice),
-          rendyolPrice: parseFloat(newProduct.rendyolPrice),
+          rendyolPrice: newProduct.rendyolPrice ? parseFloat(newProduct.rendyolPrice) : 0,
           potentialPrice: parseFloat(newProduct.potentialPrice),
           creativeCount: parseInt(newProduct.creativeCount),
           imageFile: newProduct.imageFile,
           imagePreview: newProduct.imagePreview || product.imagePreview,
           notes: newProduct.notes,
           rating: parseInt(newProduct.rating),
-          totalCost: parseFloat(newProduct.totalCost)
+          totalCost: parseFloat(newProduct.totalCost),
+          netProfit: parseFloat(newProduct.potentialPrice) - parseFloat(newProduct.aliexpressPrice) - parseFloat(newProduct.totalCost)
         } : product
       );
       setProducts(updatedProducts);
@@ -161,7 +181,7 @@ export default function Home() {
         aliexpressUrl: newProduct.aliexpressUrl,
         metaUrl: newProduct.metaUrl,
         aliexpressPrice: parseFloat(newProduct.aliexpressPrice),
-        rendyolPrice: parseFloat(newProduct.rendyolPrice),
+        rendyolPrice: newProduct.rendyolPrice ? parseFloat(newProduct.rendyolPrice) : 0,
         potentialPrice: parseFloat(newProduct.potentialPrice),
         creativeCount: parseInt(newProduct.creativeCount),
         imageFile: newProduct.imageFile,
@@ -169,6 +189,7 @@ export default function Home() {
         notes: newProduct.notes,
         rating: parseInt(newProduct.rating),
         totalCost: parseFloat(newProduct.totalCost),
+        netProfit: parseFloat(newProduct.potentialPrice) - parseFloat(newProduct.aliexpressPrice) - parseFloat(newProduct.totalCost),
         createdAt: new Date().toISOString()
       };
       setProducts([...products, product]);
@@ -243,6 +264,10 @@ export default function Home() {
           return b.totalCost - a.totalCost;
         case 'totalCost-asc':
           return a.totalCost - b.totalCost;
+        case 'netProfit-desc':
+          return b.netProfit - a.netProfit;
+        case 'netProfit-asc':
+          return a.netProfit - b.netProfit;
         default:
           return 0;
       }
@@ -321,7 +346,7 @@ export default function Home() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-black mb-1">AliExpress Fiyatı ($)</label>
+              <label className="block text-sm font-medium text-black mb-1">AliExpress Fiyatı (₺)</label>
               <input
                 type="number"
                 step="0.01"
@@ -332,18 +357,17 @@ export default function Home() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-black mb-1">Trendyol Satış Fiyatı ($)</label>
+              <label className="block text-sm font-medium text-black mb-1">Trendyol Satış Fiyatı (₺)</label>
               <input
                 type="number"
                 step="0.01"
                 value={newProduct.rendyolPrice}
                 onChange={(e) => setNewProduct({...newProduct, rendyolPrice: e.target.value})}
                 className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-black mb-1">Potansiyel Satış Fiyatı ($)</label>
+              <label className="block text-sm font-medium text-black mb-1">Potansiyel Satış Fiyatı (₺)</label>
               <input
                 type="number"
                 step="0.01"
@@ -365,7 +389,7 @@ export default function Home() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-black mb-1">Toplam Maliyet ($)</label>
+              <label className="block text-sm font-medium text-black mb-1">Diğer Maliyetler (₺)</label>
               <input
                 type="number"
                 step="0.01"
@@ -452,8 +476,10 @@ export default function Home() {
               <option value="aliexpressPrice-asc">AliExpress Fiyatı (Düşükten Yükseğe)</option>
               <option value="rendyolPrice-desc">Trendyol Fiyatı (Yüksekten Düşüğe)</option>
               <option value="rendyolPrice-asc">Trendyol Fiyatı (Düşükten Yükseğe)</option>
-              <option value="totalCost-desc">Toplam Maliyet (Yüksekten Düşüğe)</option>
-              <option value="totalCost-asc">Toplam Maliyet (Düşükten Yükseğe)</option>
+              <option value="totalCost-desc">Diğer Maliyetler (Yüksekten Düşüğe)</option>
+              <option value="totalCost-asc">Diğer Maliyetler (Düşükten Yükseğe)</option>
+              <option value="netProfit-desc">Net Kar (Yüksekten Düşüğe)</option>
+              <option value="netProfit-asc">Net Kar (Düşükten Yükseğe)</option>
             </select>
           </div>
           {sortProducts(products).map((product) => (
@@ -497,8 +523,8 @@ export default function Home() {
                         <span className="font-medium">Shopify Linki:</span>{' '}
                         <a href={product.url} 
                            title={product.url}
-                           target="_blank" 
-                           rel="noopener noreferrer" 
+          target="_blank"
+          rel="noopener noreferrer"
                            className="text-blue-600 hover:underline">
                           {truncateUrl(product.url)}
                         </a>
@@ -507,8 +533,8 @@ export default function Home() {
                         <span className="font-medium">AliExpress Linki:</span>{' '}
                         <a href={product.aliexpressUrl} 
                            title={product.aliexpressUrl}
-                           target="_blank" 
-                           rel="noopener noreferrer" 
+          target="_blank"
+          rel="noopener noreferrer"
                            className="text-blue-600 hover:underline">
                           {truncateUrl(product.aliexpressUrl)}
                         </a>
@@ -517,8 +543,8 @@ export default function Home() {
                         <span className="font-medium">Meta Kütüphane Linki:</span>{' '}
                         <a href={product.metaUrl} 
                            title={product.metaUrl}
-                           target="_blank" 
-                           rel="noopener noreferrer" 
+          target="_blank"
+          rel="noopener noreferrer"
                            className="text-blue-600 hover:underline">
                           {truncateUrl(product.metaUrl)}
                         </a>
@@ -528,20 +554,20 @@ export default function Home() {
                       <p className="text-sm text-black">
                         <span className="font-medium">AliExpress Fiyatı:</span>{' '}
                         <span className={getAliExpressPriceColor(product.aliexpressPrice)}>
-                          ${product.aliexpressPrice}
+                          ₺{product.aliexpressPrice}
                         </span>
                       </p>
                       <p className="text-sm text-black">
                         <span className="font-medium">Trendyol Satış Fiyatı:</span>{' '}
                         <span className={getTrendyolPriceColor(product.rendyolPrice)}>
-                          ${product.rendyolPrice}
+                          {product.rendyolPrice ? `₺${product.rendyolPrice}` : 'Belirtilmemiş'}
                         </span>
                       </p>
                       <p className="text-sm text-black">
-                        <span className="font-medium">Potansiyel Satış Fiyatı:</span> ${product.potentialPrice}
+                        <span className="font-medium">Potansiyel Satış Fiyatı:</span> ₺{product.potentialPrice}
                       </p>
                       <p className="text-sm text-black">
-                        <span className="font-medium">Toplam Maliyet:</span> ${product.totalCost}
+                        <span className="font-medium">Diğer Maliyetler:</span> ₺{product.totalCost}
                       </p>
                     </div>
                   </div>
@@ -550,7 +576,15 @@ export default function Home() {
                       <span className="font-medium">Notlar:</span> {product.notes}
                     </p>
                     <p className="text-sm text-black mt-2">
-                      Eklenme Tarihi: {new Date(product.createdAt).toLocaleDateString('tr-TR')}
+                      Eklenme Tarihi: {formattedDates[product.id] || ''}
+                    </p>
+                  </div>
+                  <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                    <p className="text-xl font-bold text-center">
+                      <span className="text-gray-700">Net Kar:</span>{' '}
+                      <span className={getNetProfitColor(product.netProfit)}>
+                        ₺{product.netProfit.toFixed(2)}
+                      </span>
                     </p>
                   </div>
                 </div>
@@ -558,7 +592,7 @@ export default function Home() {
             </div>
           ))}
         </div>
-      </div>
+    </div>
     </main>
   );
 }
