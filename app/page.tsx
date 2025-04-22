@@ -11,6 +11,7 @@ interface Product {
   aliexpressPrice: number;
   rendyolPrice: number;
   potentialPrice: number;
+  creativeCount: number;
   imageFile: File | null;
   imagePreview: string;
   notes: string;
@@ -51,6 +52,17 @@ const truncateUrl = (url: string, maxLength: number = 40) => {
   return url.substring(0, maxLength) + '...';
 };
 
+// Fiyat renklendirme fonksiyonları
+const getAliExpressPriceColor = (price: number) => {
+  return price > 15 ? 'text-red-600' : 'text-green-600';
+};
+
+const getTrendyolPriceColor = (price: number) => {
+  if (price > 1500) return 'text-red-600';
+  if (price >= 1000 && price <= 1500) return 'text-yellow-600';
+  return 'text-green-600';
+};
+
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [newProduct, setNewProduct] = useState({
@@ -61,6 +73,7 @@ export default function Home() {
     aliexpressPrice: '',
     rendyolPrice: '',
     potentialPrice: '',
+    creativeCount: '',
     imageFile: null as File | null,
     imagePreview: '',
     notes: '',
@@ -130,6 +143,7 @@ export default function Home() {
           aliexpressPrice: parseFloat(newProduct.aliexpressPrice),
           rendyolPrice: parseFloat(newProduct.rendyolPrice),
           potentialPrice: parseFloat(newProduct.potentialPrice),
+          creativeCount: parseInt(newProduct.creativeCount),
           imageFile: newProduct.imageFile,
           imagePreview: newProduct.imagePreview || product.imagePreview,
           notes: newProduct.notes,
@@ -149,6 +163,7 @@ export default function Home() {
         aliexpressPrice: parseFloat(newProduct.aliexpressPrice),
         rendyolPrice: parseFloat(newProduct.rendyolPrice),
         potentialPrice: parseFloat(newProduct.potentialPrice),
+        creativeCount: parseInt(newProduct.creativeCount),
         imageFile: newProduct.imageFile,
         imagePreview: newProduct.imagePreview,
         notes: newProduct.notes,
@@ -166,6 +181,7 @@ export default function Home() {
       aliexpressPrice: '',
       rendyolPrice: '',
       potentialPrice: '',
+      creativeCount: '',
       imageFile: null,
       imagePreview: '',
       notes: '',
@@ -187,6 +203,7 @@ export default function Home() {
       aliexpressPrice: product.aliexpressPrice.toString(),
       rendyolPrice: product.rendyolPrice.toString(),
       potentialPrice: product.potentialPrice.toString(),
+      creativeCount: product.creativeCount.toString(),
       imageFile: product.imageFile,
       imagePreview: product.imagePreview,
       notes: product.notes,
@@ -337,6 +354,17 @@ export default function Home() {
               />
             </div>
             <div>
+              <label className="block text-sm font-medium text-black mb-1">Reklam Kreatif Sayısı</label>
+              <input
+                type="number"
+                min="0"
+                value={newProduct.creativeCount}
+                onChange={(e) => setNewProduct({...newProduct, creativeCount: e.target.value})}
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+            <div>
               <label className="block text-sm font-medium text-black mb-1">Toplam Maliyet ($)</label>
               <input
                 type="number"
@@ -393,6 +421,7 @@ export default function Home() {
                     aliexpressPrice: '',
                     rendyolPrice: '',
                     potentialPrice: '',
+                    creativeCount: '',
                     imageFile: null,
                     imagePreview: '',
                     notes: '',
@@ -497,10 +526,16 @@ export default function Home() {
                     </div>
                     <div className="space-y-2">
                       <p className="text-sm text-black">
-                        <span className="font-medium">AliExpress Fiyatı:</span> ${product.aliexpressPrice}
+                        <span className="font-medium">AliExpress Fiyatı:</span>{' '}
+                        <span className={getAliExpressPriceColor(product.aliexpressPrice)}>
+                          ${product.aliexpressPrice}
+                        </span>
                       </p>
                       <p className="text-sm text-black">
-                        <span className="font-medium">Trendyol Satış Fiyatı:</span> ${product.rendyolPrice}
+                        <span className="font-medium">Trendyol Satış Fiyatı:</span>{' '}
+                        <span className={getTrendyolPriceColor(product.rendyolPrice)}>
+                          ${product.rendyolPrice}
+                        </span>
                       </p>
                       <p className="text-sm text-black">
                         <span className="font-medium">Potansiyel Satış Fiyatı:</span> ${product.potentialPrice}
