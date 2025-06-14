@@ -19,6 +19,7 @@ interface Product {
   totalCost: number;
   netProfit: number;
   createdAt: string;
+  tried: boolean;
 }
 
 type SortOption = 'rating-desc' | 'rating-asc' | 'aliexpressPrice-desc' | 'aliexpressPrice-asc' | 'rendyolPrice-desc' | 'rendyolPrice-asc' | 'totalCost-desc' | 'totalCost-asc' | 'netProfit-desc' | 'netProfit-asc';
@@ -88,7 +89,8 @@ export default function Home() {
     imagePreview: '',
     notes: '',
     rating: '5',
-    totalCost: ''
+    totalCost: '',
+    tried: false
   });
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [sortOption, setSortOption] = useState<SortOption>('rating-desc');
@@ -168,7 +170,8 @@ export default function Home() {
           notes: newProduct.notes,
           rating: parseInt(newProduct.rating),
           totalCost: parseFloat(newProduct.totalCost),
-          netProfit: parseFloat(newProduct.potentialPrice) - parseFloat(newProduct.aliexpressPrice) - parseFloat(newProduct.totalCost)
+          netProfit: parseFloat(newProduct.potentialPrice) - parseFloat(newProduct.aliexpressPrice) - parseFloat(newProduct.totalCost),
+          tried: newProduct.tried
         } : product
       );
       setProducts(updatedProducts);
@@ -190,6 +193,7 @@ export default function Home() {
         rating: parseInt(newProduct.rating),
         totalCost: parseFloat(newProduct.totalCost),
         netProfit: parseFloat(newProduct.potentialPrice) - parseFloat(newProduct.aliexpressPrice) - parseFloat(newProduct.totalCost),
+        tried: newProduct.tried,
         createdAt: new Date().toISOString()
       };
       setProducts([...products, product]);
@@ -207,7 +211,8 @@ export default function Home() {
       imagePreview: '',
       notes: '',
       rating: '5',
-      totalCost: ''
+      totalCost: '',
+      tried: false
     });
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -229,7 +234,8 @@ export default function Home() {
       imagePreview: product.imagePreview,
       notes: product.notes,
       rating: product.rating.toString(),
-      totalCost: product.totalCost.toString()
+      totalCost: product.totalCost.toString(),
+      tried: product.tried
     });
   };
 
@@ -237,6 +243,14 @@ export default function Home() {
     if (window.confirm('Bu ürünü silmek istediğinizden emin misiniz?')) {
       setProducts(products.filter(product => product.id !== productId));
     }
+  };
+
+  const handleTryProduct = (productId: string) => {
+    setProducts(products.map(product => 
+      product.id === productId 
+        ? { ...product, tried: !product.tried }
+        : product
+    ));
   };
 
   const getRatingColor = (rating: number) => {
@@ -450,7 +464,8 @@ export default function Home() {
                     imagePreview: '',
                     notes: '',
                     rating: '5',
-                    totalCost: ''
+                    totalCost: '',
+                    tried: false
                   });
                 }}
                 className="flex-1 bg-gray-500 text-white py-3 px-4 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
@@ -483,7 +498,10 @@ export default function Home() {
             </select>
           </div>
           {sortProducts(products).map((product) => (
-            <div key={product.id} className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+            <div 
+              key={product.id} 
+              className={`bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow ${product.tried ? 'opacity-50' : ''}`}
+            >
               <div className="flex gap-6">
                 <div className="w-48 h-48 flex-shrink-0">
                   <img
@@ -496,6 +514,16 @@ export default function Home() {
                   <div className="flex justify-between items-start mb-4">
                     <h3 className="text-xl font-medium text-gray-800">{product.name}</h3>
                     <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleTryProduct(product.id)}
+                        className={`px-4 py-2 rounded-lg text-white font-medium transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg ${
+                          product.tried 
+                            ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700' 
+                            : 'bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700'
+                        }`}
+                      >
+                        Denendi
+                      </button>
                       <span className={`px-3 py-1 rounded-full text-white font-medium ${getRatingColor(product.rating)}`}>
                         {product.rating}/10
                       </span>
