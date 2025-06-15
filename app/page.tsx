@@ -18,11 +18,12 @@ interface Product {
   rating: number;
   totalCost: number;
   netProfit: number;
-  createdAt: string;
   tried: boolean;
+  success?: boolean;
+  createdAt: string;
 }
 
-type SortOption = 'rating-desc' | 'rating-asc' | 'aliexpressPrice-desc' | 'aliexpressPrice-asc' | 'rendyolPrice-desc' | 'rendyolPrice-asc' | 'totalCost-desc' | 'totalCost-asc' | 'netProfit-desc' | 'netProfit-asc';
+type SortOption = 'rating-desc' | 'rating-asc' | 'aliexpressPrice-desc' | 'aliexpressPrice-asc' | 'rendyolPrice-desc' | 'rendyolPrice-asc' | 'totalCost-desc' | 'totalCost-asc' | 'netProfit-desc' | 'netProfit-asc' | 'date-desc' | 'date-asc';
 
 // Resim sıkıştırma fonksiyonu
 const compressImage = (imageDataUrl: string, maxWidth: number = 800): Promise<string> => {
@@ -93,7 +94,7 @@ export default function Home() {
     tried: false
   });
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [sortOption, setSortOption] = useState<SortOption>('rating-desc');
+  const [sortOption, setSortOption] = useState<SortOption>('date-desc');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Sayfa yüklendiğinde localStorage'dan verileri al
@@ -245,10 +246,10 @@ export default function Home() {
     }
   };
 
-  const handleTryProduct = (productId: string) => {
+  const handleTryProduct = (productId: string, success?: boolean) => {
     setProducts(products.map(product => 
       product.id === productId 
-        ? { ...product, tried: !product.tried }
+        ? { ...product, tried: success === undefined ? !product.tried : true, success: success }
         : product
     ));
   };
@@ -261,6 +262,12 @@ export default function Home() {
 
   const sortProducts = (products: Product[]): Product[] => {
     return [...products].sort((a, b) => {
+      // First, sort by tried status (tried products go to bottom)
+      if (a.tried !== b.tried) {
+        return a.tried ? 1 : -1;
+      }
+
+      // Then apply the selected sort option
       switch (sortOption) {
         case 'rating-desc':
           return b.rating - a.rating;
@@ -282,6 +289,10 @@ export default function Home() {
           return b.netProfit - a.netProfit;
         case 'netProfit-asc':
           return a.netProfit - b.netProfit;
+        case 'date-desc':
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case 'date-asc':
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         default:
           return 0;
       }
@@ -495,13 +506,20 @@ export default function Home() {
               <option value="totalCost-asc">Diğer Maliyetler (Düşükten Yükseğe)</option>
               <option value="netProfit-desc">Net Kar (Yüksekten Düşüğe)</option>
               <option value="netProfit-asc">Net Kar (Düşükten Yükseğe)</option>
+              <option value="date-desc">Tarih (Yeniden Eskiye)</option>
+              <option value="date-asc">Tarih (Eskiden Yeniye)</option>
             </select>
           </div>
           {sortProducts(products).map((product) => (
             <div 
               key={product.id} 
-              className={`bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow ${product.tried ? 'opacity-50' : ''}`}
+              className={`bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow relative ${product.tried ? 'opacity-50' : ''}`}
             >
+              {product.tried && product.success === false && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <span className="text-red-600 text-2xl font-bold bg-white bg-opacity-50 px-4 py-2 rounded-lg">BAŞARISIZ</span>
+                </div>
+              )}
               <div className="flex gap-6">
                 <div className="w-48 h-48 flex-shrink-0">
                   <img
@@ -514,16 +532,43 @@ export default function Home() {
                   <div className="flex justify-between items-start mb-4">
                     <h3 className="text-xl font-medium text-gray-800">{product.name}</h3>
                     <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleTryProduct(product.id)}
-                        className={`px-4 py-2 rounded-lg text-white font-medium transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg ${
-                          product.tried 
-                            ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700' 
-                            : 'bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700'
-                        }`}
-                      >
-                        Denendi
-                      </button>
+                      {!product.tried ? (
+                        <button
+                          onClick={() => handleTryProduct(product.id)}
+                          className="px-4 py-2 rounded-lg text-white font-medium transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700"
+                        >
+                          Denendi
+                        </button>
+                      ) : (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleTryProduct(product.id, true)}
+                            className={`px-4 py-2 rounded-lg text-white font-medium transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg ${
+                              product.success === true 
+                                ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700' 
+                                : 'bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700'
+                            }`}
+                          >
+                            Başarılı
+                          </button>
+                          <button
+                            onClick={() => handleTryProduct(product.id, false)}
+                            className={`px-4 py-2 rounded-lg text-white font-medium transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg ${
+                              product.success === false 
+                                ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700' 
+                                : 'bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700'
+                            }`}
+                          >
+                            Başarısız
+                          </button>
+                          <button
+                            onClick={() => handleTryProduct(product.id)}
+                            className="px-4 py-2 rounded-lg text-white font-medium transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700"
+                          >
+                            Geri Al
+                          </button>
+                        </div>
+                      )}
                       <span className={`px-3 py-1 rounded-full text-white font-medium ${getRatingColor(product.rating)}`}>
                         {product.rating}/10
                       </span>
